@@ -1,0 +1,83 @@
+---
+title: "Reference for 'tidyr' package"
+author: 
+date: "November 2, 2015"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+  > *__tidy data__: every column in the data frame represents a variable and every row represents an observation --- also referred to as __long format__*
+  
+  
+## Overview
+
+* `gather()` and `spread()` convert between long and wide data
+* `separate()` splits a single column into servaral variables and is commonly used in conjunction with `gather()`
+
+```{r results='hide', message=FALSE, warning=FALSE}
+library(tidyr); library(dplyr)
+
+set.seed(1)
+tidyr.ex <- data.frame(
+  participant = c("p1", "p2", "p3", "p4", "p5", "p6"), 
+  info = c("g1m", "g1m", "g1f", "g2m", "g2m", "g2m"),
+  day1score = rnorm(n = 6, mean = 80, sd = 15), 
+  day2score = rnorm(n = 6, mean = 88, sd = 8)
+)
+```
+
+```{r}
+print(tidyr.ex)
+```
+
+### gather: convert wide data to long data
+
+* takes columns and gathers them into new variable
+* `gather(df, newVar1, newVar2, vector1, vector2)`
+
+```{r}
+tidyr.ex %>%
+  gather(day, score, c(day1score, day2score))
+```
+
+
+### spread: convert long data to wide data
+
+* takes different levels of a factor and spreads them out into different columns
+* `spread(df, var1, var2)`
+
+```{r}
+# returns back original data frame
+tidyr.ex %>%
+  gather(day, score, c(day1score, day2score)) %>%
+  spread(day, score)
+```
+
+
+### separate: separates one column into many
+
+* takes values in a column and creates new columns
+* `separate(df, col, into, sep)`
+
+```{r}
+# sep can be numeric (length) or character
+tidyr.ex %>%
+  gather(day, score, c(day1score, day2score)) %>%
+  separate(col = info, into = c("group", "gender"), sep = 2)
+```
+
+
+### unite: opposite of separate
+
+* not used frequently
+* `unit(df, newVarName, col1, col2)`
+
+```{r}
+# default combines with "_"
+tidyr.ex %>%
+  gather(day, score, c(day1score, day2score)) %>%
+  separate(col = info, into = c("group", "gender"), sep = 2) %>%
+  unite(infoAgain, group, gender)
+```
+
